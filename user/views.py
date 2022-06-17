@@ -38,7 +38,7 @@ class UserView(APIView):
 
 
 class UserAPIView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
     # 로그인
     @csrf_exempt # 한번하고 지우기
