@@ -6,7 +6,7 @@ class Category(models.Model):
     description = models.CharField(("카테고리 설명"), max_length=200)
 
     def __str__(self):
-        return self.category
+        return self.name
 
 
 class Article(models.Model):
