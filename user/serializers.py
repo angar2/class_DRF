@@ -23,6 +23,7 @@ class HobbySerializer(serializers.ModelSerializer):
     class Meta:
         model = HobbyModel
         fields = ["name", "same_hobby_users"]
+        # fields = ["name", "userprofile_set"] # 별도의 field 지정 없이도 역참조로 사용 가능함
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -37,6 +38,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
 
     # 다른 serializer class를 가져다 사용할 수 있음
+    # (sourec="userprofile")로 filed명도 변경 가능함
     userprofile = UserProfileSerializer()
 
     class Meta:
