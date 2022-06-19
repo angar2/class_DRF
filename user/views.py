@@ -18,9 +18,9 @@ class UserView(APIView):
     
     # 해당 class의 접근 권한 설정
     # permission_classes = [permissions.AllowAny]
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
     # permission_classes = [permissions.IsAdminUser]
-    permission_classes = [RegisterMoreThanAWeek]
+    # permission_classes = [RegisterMoreThanAWeek]
 
     # 사용자 정보 조회
     def get(self, request):
