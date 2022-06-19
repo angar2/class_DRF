@@ -2,7 +2,7 @@ from django.db import models
 
 # Create your models here.
 class Category(models.Model):
-    category = models.CharField(("카테고리 이름"), max_length=50, unique=True)
+    name = models.CharField(("카테고리 이름"), max_length=50, unique=True)
     description = models.CharField(("카테고리 설명"), max_length=200)
 
     def __str__(self):
