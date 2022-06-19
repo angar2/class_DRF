@@ -13,7 +13,19 @@ class RegisterMoreThanAWeek(BasePermission):
         user = request.user
         if not user or not user.is_authenticated:
             return False
+        # print(user.join_date)
+        # print(datetime.now().date())
+        # print(datetime.now().date() - timedelta(days=7))
+        return bool(user.join_date < datetime.now().date() - timedelta(days=7))
+
+
+class RegisterMoreThanThreeDays(BasePermission):
+    
+    def has_permission(self, request, view):
+        user = request.user
+        if not user or not user.is_authenticated:
+            return False
         print(user.join_date)
         print(datetime.now().date())
-        print(datetime.now().date() - timedelta(days=7))
-        return bool(user.join_date < datetime.now().date() - timedelta(days=7))
+        print(datetime.now().date() - timedelta(days=2))
+        return bool(user.join_date < datetime.now().date() - timedelta(days=2))

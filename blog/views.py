@@ -1,15 +1,11 @@
-import json
-from unicodedata import category
-from unittest import result
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework import permissions
 from rest_framework.response import Response
-from django.contrib.auth import login, logout, authenticate
-from django.views.decorators.csrf import csrf_exempt
-from django.db.models import F
 from .models import Article, Category
+
+from main.permissions import RegisterMoreThanThreeDays
 
 # Create your views here.
 class ArticleView(APIView):
@@ -20,6 +16,7 @@ class ArticleView(APIView):
         titles = [article.title for article in articles]
         return Response({"게시물 정보": titles})
 
+    permission_classes = [RegisterMoreThanThreeDays]
     def post(self, request):
         title = request.data.get('title', '')
         categories = request.data.get('categories', '')
