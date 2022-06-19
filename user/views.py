@@ -8,6 +8,8 @@ from django.contrib.auth import login, logout, authenticate
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import F
 
+from user.serializers import UserSerializer
+
 # FBV: Function Base View
 # CBV: Class Base View (함수명은 API method를 이용함 / 별도 지정 x)
 class UserView(APIView):
@@ -33,16 +35,16 @@ class UserView(APIView):
         # user_profile = UserProfile.objects.get(user=user)
         # hobbys = user_profile.hobby.all()
 
-        for hobby in hobbys:
-            # exculde : 매칭 된 쿼리만 제외, filter와 반대
-            # annotate : 필드 이름을 변경해주기 위해 사용, 이외에도 원하는 필드를 추가하는 등 다양하게 활용 가능
-            # values / values_list : 지정한 필드만 리턴 할 수 있음. values는 dict로 return, values_list는 tuple로 ruturn
-            # F() : 객체에 해당되는 쿼리를 생성함
-            hobby_members = hobby.userprofile_set.exclude(user=user).annotate(username=F('user__username')).values_list('username', flat=True)
-            hobby_members = list(hobby_members)
-            print(f"hobby : {hobby.name} / hobby members : {hobby_members}")
+        # for hobby in hobbys:
+        #     # exculde : 매칭 된 쿼리만 제외, filter와 반대
+        #     # annotate : 필드 이름을 변경해주기 위해 사용, 이외에도 원하는 필드를 추가하는 등 다양하게 활용 가능
+        #     # values / values_list : 지정한 필드만 리턴 할 수 있음. values는 dict로 return, values_list는 tuple로 ruturn
+        #     # F() : 객체에 해당되는 쿼리를 생성함
+        #     hobby_members = hobby.userprofile_set.exclude(user=user).annotate(username=F('user__username')).values_list('username', flat=True)
+        #     hobby_members = list(hobby_members)
+        #     print(f"hobby : {hobby.name} / hobby members : {hobby_members}")
 
-        return Response({"message": "ㅇㅋ"})
+        return Response(UserSerializer(request.user).data)
 
     # 회원가입
     def post(self, request):
