@@ -5,18 +5,18 @@ from rest_framework import permissions
 from rest_framework.response import Response
 from .models import Article, Category
 
-from main.permissions import RegisterMoreThanThreeDays
+from main.permissions import RegisterMoreThanThreeDays, IsAdminOrIsAuthenticatedReadOnly
 
 # Create your views here.
 class ArticleView(APIView):
 
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdminOrIsAuthenticatedReadOnly]
+    
     def get(self, request):
         articles = Article.objects.filter(author=request.user)
         titles = [article.title for article in articles]
         return Response({"게시물 정보": titles})
 
-    permission_classes = [RegisterMoreThanThreeDays]
     def post(self, request):
         user = request.user
         title = request.data.get('title', '')

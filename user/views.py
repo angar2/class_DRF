@@ -10,20 +10,19 @@ from django.db.models import F
 
 from user.serializers import UserSerializer, UserSignupSerializer
 
-from main.permissions import RegisterMoreThanAWeek
+from main.permissions import RegisterMoreThanAWeek, IsAdminOrIsAuthenticatedReadOnly
 
 # FBV: Function Base View
 # CBV: Class Base View (함수명은 API method를 이용함 / 별도 지정 x)
 class UserView(APIView):
     
     # 해당 class의 접근 권한 설정
-    # permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.AllowAny]
     # permission_classes = [permissions.IsAuthenticated]
     # permission_classes = [permissions.IsAdminUser]
     # permission_classes = [RegisterMoreThanAWeek]
 
     # 사용자 정보 조회
-    permission_classes = [permissions.IsAuthenticated]
     def get(self, request):
         user = request.user
 
@@ -52,7 +51,6 @@ class UserView(APIView):
 
     
     # 회원가입
-    permission_classes = [permissions.AllowAny]
     def post(self, request):
         serializer = UserSignupSerializer(data=request.data)
         
