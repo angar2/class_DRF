@@ -19,7 +19,8 @@ class ArticleView(APIView):
     permission_classes = [RegisterMoreThanThreeDays]
     def post(self, request):
         title = request.data.get('title', '')
-        categories = request.data.get('categories', '')
+        # categories = request.data.get('categories', '')
+        categories = request.data.get('categories', [])
         content = request.data.get('content', '')
 
         if len(title) < 6:
@@ -37,6 +38,7 @@ class ArticleView(APIView):
 
         categories = [Category.objects.get(name=categories)]
         new_article = Article.objects.create(
+        # new_article = Article(
             author = request.user,
             title = title,
             body = content

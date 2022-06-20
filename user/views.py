@@ -8,7 +8,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import F
 
-from user.serializers import UserSerializer
+from user.serializers import UserSerializer, UserSignupSerializer
 
 from main.permissions import RegisterMoreThanAWeek
 
@@ -18,11 +18,12 @@ class UserView(APIView):
     
     # 해당 class의 접근 권한 설정
     # permission_classes = [permissions.AllowAny]
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
     # permission_classes = [permissions.IsAdminUser]
     # permission_classes = [RegisterMoreThanAWeek]
 
     # 사용자 정보 조회
+    permission_classes = [permissions.IsAuthenticated]
     def get(self, request):
         user = request.user
 
@@ -49,10 +50,19 @@ class UserView(APIView):
 
         return Response(UserSerializer(request.user).data)
 
+    
     # 회원가입
+    permission_classes = [permissions.AllowAny]
     def post(self, request):
-
-        return Response({"message": "post method!"})
+        serializer = UserSignupSerializer(data=request.data)
+        
+        # 유효한 데이터가 요청되었는지 검증
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "가입 완료!"})
+        else:
+            print(serializer.errors)
+            return Response({"message": "가입 실패!"})
 
     # 회원 정보 수정
     def put(self, request):

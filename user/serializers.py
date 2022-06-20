@@ -7,6 +7,27 @@ from user.models import Hobby as HobbyModel
 from blog.serializers import ArticleSerializer
 
 
+class UserSignupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserModel
+        fields = "__all__"
+
+    # super(): child class에서 parent class를 상속받는 후, child class에서 동일한 method를 사용할 경우, parent class의 method가 overriding(덮어쓰기)됨. => super()를 통해 parent class의 method 내용을 모두 가져다 사용함
+    def create(self, *args, **kwargs):
+        user = super().create(*args, **kwargs)
+        p = user.password
+        user.set_password(p) # hashing
+        user.save()
+        return user
+
+    def update(self, *args, **kwargs):
+        user = super().update(*args, **kwargs)
+        p = user.password
+        user.set_password(p) # hashing
+        user.save()
+        return user
+
+
 class HobbySerializer(serializers.ModelSerializer):
 
     # SerializerMethodField을 사용하기 위해선 변수 지정 후 "get_" 함수를 만들어야함
