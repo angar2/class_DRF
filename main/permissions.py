@@ -28,4 +28,4 @@ class RegisterMoreThanThreeDays(BasePermission):
         print(user.join_date)
         print(datetime.now().date())
         print(datetime.now().date() - timedelta(days=2))
-        return bool(user.join_date < datetime.now().date() - timedelta(days=2))
+        return bool(user.join_date < timezone.now() - timedelta(days=2))
