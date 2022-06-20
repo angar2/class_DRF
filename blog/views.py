@@ -18,8 +18,8 @@ class ArticleView(APIView):
 
     permission_classes = [RegisterMoreThanThreeDays]
     def post(self, request):
+        user = request.user
         title = request.data.get('title', '')
-        # categories = request.data.get('categories', '')
         categories = request.data.get('categories', [])
         content = request.data.get('content', '')
 
@@ -36,15 +36,14 @@ class ArticleView(APIView):
                 "error": "카테고리가 비어 있습니다."
             })
 
-        categories = [Category.objects.get(name=categories)]
-        new_article = Article.objects.create(
-        # new_article = Article(
-            author = request.user,
+        # categories = [Category.objects.get(name=categories)] # value를 'name'을 받을 때 사용
+        new_article = Article(
+            author = user,
             title = title,
             body = content
         )
-        new_article.category.add(*categories)
         new_article.save()
+        new_article.category.add(*categories)
 
         return Response({"message": "게시물이 저장되었습니다."}, status=status.HTTP_200_OK)
 
