@@ -6,6 +6,7 @@ from user.models import Hobby as HobbyModel
 
 from blog.serializers import ArticleSerializer
 
+VALID_EMAIL_LIST = ["naver.com", "gmail.com", "yahoo.com"]
 
 # class UserSignupSerializer(serializers.ModelSerializer):
 #     class Meta:
@@ -73,9 +74,9 @@ class UserSerializer(serializers.ModelSerializer):
         except:
             http_method = ""
         if http_method == "POST":
-            if not data.get("email", "").endswith("@naver.com"):
+            if data.get("email", "").split("@")[-1] not in VALID_EMAIL_LIST:
                 raise serializers.ValidationError(
-                    detail={"error": "네이버 이메일만 가입이 가능합니다."}
+                    detail={"error": "유효한 이메일 주소가 아닙니다."}
                 )
         return data
 
