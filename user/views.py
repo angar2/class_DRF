@@ -10,7 +10,7 @@ from django.db.models import F
 
 from user.serializers import UserSerializer, UserSignupSerializer
 
-from main.permissions import RegisterMoreThanAWeek, IsAdminOrIsAuthenticatedReadOnly
+from main.permissions import RegisterMoreThanAWeek
 
 # FBV: Function Base View
 # CBV: Class Base View (함수명은 API method를 이용함 / 별도 지정 x)

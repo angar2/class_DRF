@@ -23,7 +23,7 @@ class RegisterMoreThanAWeek(BasePermission):
 
 class RegisterMoreThanThreeDays(BasePermission):
     
-    message = '가입 후 1주일 이상 지난 사용자만 사용하실 수 있습니다.'
+    message = '가입 후 3일 이상 지난 사용자만 사용하실 수 있습니다.'
         
     def has_permission(self, request, view):
         user = request.user
@@ -36,7 +36,7 @@ class GenericAPIException(APIException):
         super().__init__(detail=detail, code=code)
 
 
-class IsAdminOrIsAuthenticatedReadOnly(BasePermission):
+class IsAdminOrAWeekSignUp(BasePermission):
     """
     admin 사용자는 모두 가능, 로그인 사용자는 조회만 가능
     """
@@ -52,7 +52,7 @@ class IsAdminOrIsAuthenticatedReadOnly(BasePermission):
                 }
             raise GenericAPIException(status_code=status.HTTP_401_UNAUTHORIZED, detail=response)
 
-        if user.is_authenticated and user.is_admin:
+        if bool(user.join_date < (timezone.now() - timedelta(days=7))) or user.is_admin:
             return True
             
         if user.is_authenticated and request.method in self.SAFE_METHODS: # GET

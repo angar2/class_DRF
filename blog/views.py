@@ -6,12 +6,12 @@ from rest_framework import permissions
 from rest_framework.response import Response
 from .models import Article, Category
 
-from main.permissions import RegisterMoreThanThreeDays, IsAdminOrIsAuthenticatedReadOnly
+from main.permissions import RegisterMoreThanThreeDays, IsAdminOrAWeekSignUp
 
 # Create your views here.
 class ArticleView(APIView):
 
-    permission_classes = [IsAdminOrIsAuthenticatedReadOnly]
+    permission_classes = [IsAdminOrAWeekSignUp]
     
     def get(self, request):
         current_date = datetime.date.today()
