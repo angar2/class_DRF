@@ -53,21 +53,22 @@ class HobbySerializer(serializers.ModelSerializer):
 
 class UserProfileSerializer(serializers.ModelSerializer):
 
-    hobby = HobbySerializer(many=True) # input data가 queryset일 경우 many=True로 설정
+    hobby = HobbySerializer(many=True, read_only=True) # input data가 queryset일 경우 many=True로 설정
+    get_hobbys = serializers.ListField(required=False)
 
     class Meta:
         model = UserProfileModel
-        fields = ["introduction", "birthday", "age", "hobby"]
+        fields = ["introduction", "birthday", "age", "hobby", "get_hobbys"]
 
 
 class UserSerializer(serializers.ModelSerializer):
 
     # 다른 serializer class를 가져다 사용할 수 있음
     # (sourec="userprofile")로 filed명도 변경 가능함
-    userprofile = UserProfileSerializer(read_only=True)
+    userprofile = UserProfileSerializer()
     article = ArticleSerializer(many=True, source="article_set", read_only=True)
 
-    # Custom validation: 기존 valid를 통과해야 사용됨
+    # Custom validation: 기존 validation을 통과해야 사용됨
     def validate(self, data):
         try:
             http_method = self.context["request"].method
@@ -79,6 +80,23 @@ class UserSerializer(serializers.ModelSerializer):
                     detail={"error": "유효한 이메일 주소가 아닙니다."}
                 )
         return data
+
+    # 기존의 create 함수를 덮어쓰기 때문에 기존 validation을 통과하지 않음
+    # 기존 create 함수에서 제공하지 않은 기능을 추가하기 위해선 create를 custom 해야함
+    def create(self, validated_data):
+        user_profile = validated_data.pop("userprofile")
+        get_hobbys = user_profile.pop("get_hobbys", [])
+        password = validated_data.pop("password")
+
+        user = UserModel(**validated_data)
+        user.set_password(password)
+        user.save()
+
+        user_profile = UserProfileModel.objects.create(user=user, **user_profile)
+        user_profile.hobby.add(*get_hobbys) # manytomany의 경우 추가하기 위해선 add를 사용함
+        user_profile.save()
+
+        return user
 
     class Meta:
         model = UserModel
