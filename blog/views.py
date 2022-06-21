@@ -1,3 +1,4 @@
+import datetime
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework import status
@@ -13,9 +14,17 @@ class ArticleView(APIView):
     permission_classes = [IsAdminOrIsAuthenticatedReadOnly]
     
     def get(self, request):
+        current_date = datetime.date.today()
         articles = Article.objects.filter(author=request.user)
-        titles = [article.title for article in articles]
-        return Response({"게시물 정보": titles})
+        exposed_articles = articles.filter(start_date__lte=current_date).filter(end_date__gte=current_date)
+        sorted_articles = exposed_articles.order_by('-start_date')
+
+        articles_list = [{
+            "title": article.title,
+            "start_date": article.start_date,
+            "end_date": article.end_date
+            } for article in sorted_articles]
+        return Response({"게시물 정보": articles_list})
 
     def post(self, request):
         user = request.user
