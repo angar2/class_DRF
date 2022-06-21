@@ -7,25 +7,25 @@ from user.models import Hobby as HobbyModel
 from blog.serializers import ArticleSerializer
 
 
-class UserSignupSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserModel
-        fields = "__all__"
+# class UserSignupSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = UserModel
+#         fields = "__all__"
 
-    # super(): child class에서 parent class를 상속받는 후, child class에서 동일한 method를 사용할 경우, parent class의 method가 overriding(덮어쓰기)됨. => super()를 통해 parent class의 method 내용을 모두 가져다 사용함
-    def create(self, *args, **kwargs):
-        user = super().create(*args, **kwargs)
-        p = user.password
-        user.set_password(p) # hashing
-        user.save()
-        return user
+#     # super(): child class에서 parent class를 상속받는 후, child class에서 동일한 method를 사용할 경우, parent class의 method가 overriding(덮어쓰기)됨. => super()를 통해 parent class의 method 내용을 모두 가져다 사용함
+#     def create(self, *args, **kwargs):
+#         user = super().create(*args, **kwargs)
+#         p = user.password
+#         user.set_password(p) # hashing
+#         user.save()
+#         return user
 
-    def update(self, *args, **kwargs):
-        user = super().update(*args, **kwargs)
-        p = user.password
-        user.set_password(p) # hashing
-        user.save()
-        return user
+#     def update(self, *args, **kwargs):
+#         user = super().update(*args, **kwargs)
+#         p = user.password
+#         user.set_password(p) # hashing
+#         user.save()
+#         return user
 
 
 class HobbySerializer(serializers.ModelSerializer):
@@ -63,9 +63,26 @@ class UserSerializer(serializers.ModelSerializer):
 
     # 다른 serializer class를 가져다 사용할 수 있음
     # (sourec="userprofile")로 filed명도 변경 가능함
-    userprofile = UserProfileSerializer()
-    article = ArticleSerializer(many=True, source="article_set")
+    userprofile = UserProfileSerializer(read_only=True)
+    article = ArticleSerializer(many=True, source="article_set", read_only=True)
 
-    class Meta:
+    class Meta
         model = UserModel
-        fields = ["username", "email", "fullname", "join_date", "userprofile", "article"]
+        fields = ["username", "password", "email", "fullname", "join_date", "userprofile", "article"]
+
+        extra_kwargs = {
+            # write_only : 해당 필드를 쓰기 전용으로 만들어 준다.
+            # 쓰기 전용으로 설정 된 필드는 직렬화 된 데이터에서 보여지지 않는다.
+            'password': {'write_only': True}, # default : False
+            'email': {
+                # error_messages : 에러 메세지를 자유롭게 설정 할 수 있다.
+                'error_messages': {
+                    # required : 값이 입력되지 않았을 때 보여지는 메세지
+                    'required': '이메일을 입력해주세요.',
+                    # invalid : 값의 포맷이 맞지 않을 때 보여지는 메세지
+                    'invalid': '알맞은 형식의 이메일을 입력해주세요.'
+                    },
+                    # required : validator에서 해당 값의 필요 여부를 판단한다.
+                    'required': False # default : True
+                    },
+        }

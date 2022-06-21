@@ -1,3 +1,4 @@
+from functools import partial
 from unittest import result
 from django.shortcuts import render
 from rest_framework.views import APIView
@@ -8,7 +9,9 @@ from django.contrib.auth import login, logout, authenticate
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import F
 
-from user.serializers import UserSerializer, UserSignupSerializer
+from user.models import User as UserModel
+
+from user.serializers import UserSerializer
 
 from main.permissions import RegisterMoreThanAWeek
 
@@ -52,20 +55,25 @@ class UserView(APIView):
     
     # 회원가입
     def post(self, request):
-        serializer = UserSignupSerializer(data=request.data)
+        user_serializer = UserSerializer(data=request.data)
         
         # 유효한 데이터가 요청되었는지 검증
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"message": "가입 완료!"})
-        else:
-            print(serializer.errors)
-            return Response({"message": "가입 실패!"})
+        if user_serializer.is_valid():
+            user_serializer.save()
+            return Response(user_serializer.data, status=status.HTTP_200_OK)
+        
+        return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # 회원 정보 수정
-    def put(self, request):
+    def put(self, request, obj_id):
+        user = UserModel.objects.get(id=obj_id)
+        user_serializer = UserSerializer(user, request.data, partial=True) # partial=True: 일부 field만 요청해도 됨
+        
+        if user_serializer.is_valid():
+            user_serializer.save()
+            return Response(user_serializer.data, status=status.HTTP_200_OK)
 
-        return Response({"message": "put method!"})
+        return Response(user_serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
     # 회원 탈퇴
     def delete(self, request):
