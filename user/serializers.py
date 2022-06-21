@@ -68,10 +68,15 @@ class UserSerializer(serializers.ModelSerializer):
 
     # Custom validation: 기존 valid를 통과해야 사용됨
     def validate(self, data):
-        if not data.get("email", "").endswith("@naver.com"):
-            raise serializers.ValidationError(
-                detail={"error": "네이버 이메일만 가입이 가능합니다."}
-            )
+        try:
+            http_method = self.context["request"].method
+        except:
+            http_method = ""
+        if http_method == "POST":
+            if not data.get("email", "").endswith("@naver.com"):
+                raise serializers.ValidationError(
+                    detail={"error": "네이버 이메일만 가입이 가능합니다."}
+                )
         return data
 
     class Meta:

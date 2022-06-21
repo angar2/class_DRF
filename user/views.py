@@ -55,7 +55,7 @@ class UserView(APIView):
     
     # 회원가입
     def post(self, request):
-        user_serializer = UserSerializer(data=request.data)
+        user_serializer = UserSerializer(data=request.data, context={"request": request}) # context: request method 구분을 위함
         
         # 유효한 데이터가 요청되었는지 검증
         if user_serializer.is_valid():
