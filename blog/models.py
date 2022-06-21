@@ -1,3 +1,4 @@
+import datetime
 from django.db import models
 
 # Create your models here.
@@ -14,6 +15,8 @@ class Article(models.Model):
     title = models.CharField(("글 제목"), max_length=200)
     body = models.TextField(("글 내용"), max_length=1000)
     category = models.ManyToManyField('Category')
+    start_date = models.DateField('노출 시작일', auto_now_add=True)
+    end_date = models.DateField('노출 종료일', default=(datetime.date.today() + datetime.timedelta(days=7)))
 
     def __str__(self):
         return self.title
