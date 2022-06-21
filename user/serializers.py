@@ -66,7 +66,15 @@ class UserSerializer(serializers.ModelSerializer):
     userprofile = UserProfileSerializer(read_only=True)
     article = ArticleSerializer(many=True, source="article_set", read_only=True)
 
-    class Meta
+    # Custom validation: 기존 valid를 통과해야 사용됨
+    def validate(self, data):
+        if not data.get("email", "").endswith("@naver.com"):
+            raise serializers.ValidationError(
+                detail={"error": "네이버 이메일만 가입이 가능합니다."}
+            )
+        return data
+
+    class Meta:
         model = UserModel
         fields = ["username", "password", "email", "fullname", "join_date", "userprofile", "article"]
 
