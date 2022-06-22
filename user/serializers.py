@@ -98,6 +98,28 @@ class UserSerializer(serializers.ModelSerializer):
 
         return user
 
+    def update(self, instance, validated_data):
+        # instance에는 입력된 object가 담긴다.
+        user_profile = validated_data.pop("userprofile")
+        get_hobbys = user_profile.pop("get_hobbys",[])
+
+        for key, value in validated_data.items():
+            if key == "password":
+                instance.set_password(value)
+                continue
+            
+            setattr(instance, key, value)
+        instance.save()
+
+        user_profile_object = instance.userprofile
+        for key, value in user_profile.items():
+            setattr(user_profile_object, key, value)
+
+        user_profile_object.save()
+        user_profile_object.hobby.set(get_hobbys)
+
+        return instance
+
     class Meta:
         model = UserModel
         fields = ["username", "password", "email", "fullname", "join_date", "userprofile", "article"]
