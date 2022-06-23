@@ -1,5 +1,5 @@
-import datetime
 from django.db import models
+from django.utils import timezone
 
 
 # Create your models here.
@@ -9,6 +9,6 @@ class Product(models.Model):
     thumbnail = models.FileField(("썸네일"), upload_to='img/')
     description = models.TextField(("글 내용"), max_length=1000)
     post_date = models.DateField('등록일', auto_now_add=True)
-    start_date = models.DateField('노출 시작일', auto_now_add=True)
-    end_date = models.DateField('노출 종료일', default=(datetime.date.today() + datetime.timedelta(days=7)))
+    start_date = models.DateField('노출 시작일', default=timezone.now)
+    end_date = models.DateField('노출 종료일', default=timezone.now)
 
