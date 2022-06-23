@@ -25,6 +25,13 @@ class UserAdmin(BaseUserAdmin):
        UserProfileInline,
     )
 
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('email', 'fullname', 'password', 'password2')
+        }),
+    )
+
     filter_horizontal = []
 
     def get_readonly_fields(self, request, obj=None):
