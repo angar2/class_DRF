@@ -4,6 +4,11 @@ from user.models import UserProfile as UserProfileModel
 from user.models import Hobby as HobbyModel
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
+# UserAdmin에 UserProfile 모델 추가하기
+class UserProfileInline(admin.StackedInline):
+    model = UserProfileModel
+    filter_horizontal = ['hobby']
+
 
 # admin으로 user 정보를 저장할 때, 비밀번호가 hashing되지 않기 때문에 Django에서 제공하는 UserAdmin을 상속받아 사용함
 class UserAdmin(BaseUserAdmin):
@@ -15,6 +20,10 @@ class UserAdmin(BaseUserAdmin):
     fieldsets = (
         ("info", {'fields': ('username', 'password', 'email', 'fullname', 'join_date',)}),
         ('Permissions', {'fields': ('is_admin', 'is_active', )}),)
+
+    inlines = (
+       UserProfileInline,
+    )
 
     filter_horizontal = []
 
