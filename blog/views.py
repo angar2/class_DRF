@@ -1,4 +1,5 @@
 import datetime
+from django.utils import timezone
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework import status
@@ -16,17 +17,28 @@ class ArticleView(APIView):
     permission_classes = [IsAdminOrAWeekSignUp]
     
     def get(self, request):
-        current_date = datetime.date.today()
-        articles = Article.objects.filter(author=request.user)
-        exposed_articles = articles.filter(start_date__lte=current_date).filter(end_date__gte=current_date)
-        sorted_articles = exposed_articles.order_by('-start_date')
+        uer = request.user
+        today = timezone.now()
+        articles = Article.objects.filter(
+            start_date__lte = today,
+            end_date__gte = today,
+        ).order_by("-id")
 
-        articles_list = [{
-            "title": article.title,
-            "start_date": article.start_date,
-            "end_date": article.end_date
-            } for article in sorted_articles]
-        return Response({"게시물 정보": articles_list})
+        serializer = ArticleSerializer(articles, many=True).data
+        
+        return Response(serializer, status=status.HTTP_200_OK)
+
+        # current_date = datetime.date.today()
+        # articles = Article.objects.filter(author=request.user)
+        # exposed_articles = articles.filter(start_date__lte=current_date).filter(end_date__gte=current_date)
+        # sorted_articles = exposed_articles.order_by('-start_date')
+
+        # articles_list = [{
+        #     "title": article.title,
+        #     "start_date": article.start_date,
+        #     "end_date": article.end_date
+        #     } for article in sorted_articles]
+        # return Response({"게시물 정보": articles_list})
 
     def post(self, request):
         user = request.user
